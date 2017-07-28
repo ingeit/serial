@@ -7,13 +7,15 @@
 </ion-header>
 
 <ion-content padding>
+
+  <ion-item>
+    <ion-input type="text" [(ngModel)]="chat_input" placeholder="Ingresar HEX"></ion-input>
+  </ion-item> 
+
+  <button ion-button block (click)="send(chat_input)">Enviar</button>  
+
   <ion-list>
     <ion-item *ngFor="let message of chats">{{message}}</ion-item>
   </ion-list>
 
-  <!-- <ion-item>
-    <ion-input type="text" [(ngModel)]="chat_input" placeholder="Enter message"></ion-input>
-  </ion-item> -->
-
-  <!-- <button ion-button block (click)="send(chat_input)">Send</button> -->
 </ion-content>

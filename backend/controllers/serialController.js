@@ -30,7 +30,7 @@ exports.enviar = function(req, res, next){
             return console.log('Error on write: ', err.message);
         }
         console.log('message written');
-        res.send('Se escribio correctamente');
+        res.json('Se escribio correctamente');
     });
 
 }

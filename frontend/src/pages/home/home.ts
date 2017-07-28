@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import * as io from 'socket.io-client';
-
+import { SerialProvider } from '../../providers/serial/serial';
 
 @Component({
   selector: 'page-home',
@@ -12,7 +12,9 @@ export class HomePage {
   chat_input:string;
   chats = [];
 
-  constructor(public navCtrl: NavController) {
+  constructor(public navCtrl: NavController,
+              public serialProv:SerialProvider) {
+
     this.socket = io('http://192.168.1.177:3000');
 
     this.socket.on('message', (msg) => {
@@ -24,8 +26,13 @@ export class HomePage {
   }
 
   send(msg) {
+
+    let hex ={
+      'valor': msg
+    }
+
       if(msg != ''){
-          this.socket.emit('message', msg);
+          this.serialProv.enviarSerial(hex);
       }
       this.chat_input = '';
   }
