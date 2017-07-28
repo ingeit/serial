@@ -15,7 +15,7 @@ export class SerialProvider {
           let headers = new Headers();
           headers.append('Content-Type', 'application/json');
           
-          this.http.post(`http://localhost:3000/enviar`, JSON.stringify(hexa), {headers: headers})
+          this.http.post(`http://192.168.1.177:3000/enviar`, JSON.stringify(hexa), {headers: headers})
             .map(res => res.json())
             .subscribe(res => {
               console.log(res);
