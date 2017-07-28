@@ -1,5 +1,5 @@
 {
-  "name": "serial",
+  "name": "serialnode",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,11 +12,8 @@
     "express": "~4.15.2",
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
-    "serialport": "^5.0.0-beta8",
     "serve-favicon": "~2.4.2",
+    "serialport": "^5.0.0-beta8",
     "socket.io": "^2.0.3"
-  },
-  "devDependencies": {
-    "serialport": "^5.0.0-beta8"
   }
 }
