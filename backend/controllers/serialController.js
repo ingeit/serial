@@ -1,10 +1,15 @@
 const SerialPort = require('serialport');
-const ByteLength = SerialPort.parsers.ByteLength
+const ByteLength = SerialPort.parsers.ByteLength;
+const Delimiter = SerialPort.parsers.Delimiter;
+const Readline = SerialPort.parsers.Readline;
 const port = new SerialPort('/dev/tty.usbserial',{
     baudRate: 115200,
 });
-const parser = port.pipe(new ByteLength({length: 3}));
+// const parser = port.pipe(new ByteLength({length: 3}));
 
+const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xc8])}));
+
+// const parser = port.pipe(new Readline({ delimiter: '200' }));
 exports.iniciar = function(socket){
     port.on("open", function () {
         console.log('open');
@@ -14,13 +19,13 @@ exports.iniciar = function(socket){
 
         parser.on('data', function(data) {
             var byte   = new Int32Array(data);
-            byte = byte.toString(); 
+            byte = byte.toString();
             console.log('trama numero',primerByte)
-            console.log(byte)   
-            console.log(byte[0])
-            console.log(byte[2])  
-            console.log(byte[4])   
-            primerByte++;  
+            console.log(byte)
+            // console.log(byte[0])
+            // console.log(byte[2])
+            // console.log(byte[4])
+            primerByte++;
             // if(primerByte === 1){
             //     primerByte = 0;
             //     if(byte === 0) tamTrama = 2;
