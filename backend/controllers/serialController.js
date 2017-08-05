@@ -21,6 +21,7 @@ exports.iniciar = function(socket){
             var byte   = new Int32Array(data);
             byte = byte.toString();
             console.log('trama numero',primerByte)
+            console.log('tamaño del array',data.length)
             console.log(byte)
             // console.log(byte[0])
             // console.log(byte[2])
