@@ -5,46 +5,30 @@ const Readline = SerialPort.parsers.Readline;
 const port = new SerialPort('/dev/tty.usbserial',{
     baudRate: 115200,
 });
-// const parser = port.pipe(new ByteLength({length: 3}));
+const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xFF,0xFF])}));
 
-const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xc8])}));
 
-// const parser = port.pipe(new Readline({ delimiter: '200' }));
+var secEnvio = 0;
+var secRecepcion = 0;
+var cuenta = 0;
+var puedoEnviar = 0;
+
 exports.iniciar = function(socket){
+
     port.on("open", function () {
         console.log('open');
-        var primerByte = 1;
-        var trama = [];
-        var tamTrama = 0;
+
+        pollingEnvio();
 
         parser.on('data', function(data) {
-            var byte   = new Int32Array(data);
-            byte = byte.toString();
-            console.log('trama numero',primerByte)
+            var trama   = new Int32Array(data);
+            trama = trama.toString();
+            controlTrama(data);
             console.log('tamaño del array',data.length)
-            console.log(byte)
-            // console.log(byte[0])
-            // console.log(byte[2])
-            // console.log(byte[4])
-            primerByte++;
-            // if(primerByte === 1){
-            //     primerByte = 0;
-            //     if(byte === 0) tamTrama = 2;
-            //     else tamTrama = 21;
-            //     console.log("tamaño trama ",tamTrama);
-            //     trama.push(byte);
-            // }else{
-            //     trama.push(byte);
-            //     tamTrama = tamTrama - 1;
-            //     if(tamTrama === 0){
-            //         primerByte = 1;
-            //         console.log(trama);
-            //         trama = [];
-            //     }
-            // }
+            console.log('traman numero',cuenta)
+            console.log(trama)
+            cuenta++;
             // socket.emit('message', view.toString());
-            // console.log(view.toString());
-            // console.log(data);
         });
     });
 
@@ -71,6 +55,30 @@ exports.enviar = function(req, res, next){
 
 }
 
+function pollingEnvio(){
+    setTimeout(function(){
+        if(puedoEnviar === 1){
+            console.log('dato enviado');
+        }
+        pollingEnvio();
+    },20);
+}
+
+function controlTrama(trama){
+    if(trama.length === 3){
+        puedoEnviar = 1;
+    }
+}
+
+
+function pausecomp(millis) 
+{
+    var date = new Date();
+    var curDate = null;
+
+    do { curDate = new Date(); } 
+    while(curDate-date < millis);
+} 
 
 
 
