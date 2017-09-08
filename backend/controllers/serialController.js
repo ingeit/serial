@@ -2,7 +2,8 @@ const SerialPort = require('serialport');
 const ByteLength = SerialPort.parsers.ByteLength;
 const Delimiter = SerialPort.parsers.Delimiter;
 const Readline = SerialPort.parsers.Readline;
-const port = new SerialPort('/dev/tty.usbserial',{
+// const port = new SerialPort('/dev/tty.usbserial',{
+const port = new SerialPort('COM3',{
     baudRate: 115200,
 });
 const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xFF,0xFE])}));
