@@ -31,9 +31,10 @@ exports.iniciar = function(socket){
         });
 
         parser.on('data', function(data) {
+            console.log(data);
             controlTrama(data);// checkea si ACK o DATO.
-            // console.log('tamaño del array',data.length)
-            // console.log('traman numero',cuenta)
+            console.log('tamaño del array',data.length)
+            console.log('traman numero',cuenta)
             cuenta++;
             // socket.emit('message', view.toString());
         });
@@ -80,12 +81,27 @@ function controlTrama(data){
         puedoEnviar = 1;
     }else{
         if(controlCRC(data)){
-            console.log('trama correcta, listo para responder')
+            console.log('trama correcta, listo para responder');
+            enviarACK(data);
             
         }else{
             console.log('CRC incorrecto')
         }
     }
+}
+
+function enviarACK(data){
+
+    var nSeq = "0x"+data[1];
+    var buffer = Buffer.from([0x00, nSeq, nSeq,0xFF, 0xFE]);
+    console.log('armando ack: ', buffer);
+    port.write(buffer,'hex', function(err) {
+        if (err) {
+            return console.log('Error on write: ', err.message);
+        }
+        console.log('ack enviado: ', buffer);
+    });
+
 }
 
 function controlCRC(data){
@@ -94,8 +110,8 @@ function controlCRC(data){
     for(i=0;i<19;i++){
         crc = crc + data[i];
     }
-    // console.log('CRC calculado',crc)
-    // console.log('CRC trama',crcTrama)
+    console.log('CRC calculado',crc)
+    console.log('CRC trama',crcTrama)
     if(crc === crcTrama){
         return true;
     }else{
