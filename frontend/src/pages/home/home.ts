@@ -31,10 +31,10 @@ export class HomePage {
       'valor': msg
     }
 
-      if(msg != ''){
-          this.serialProv.enviarSerial(hex);
-      }
-      this.chat_input = '';
+    if(msg != ''){
+        this.serialProv.enviarSerial(hex);
+    }
+    this.chat_input = '';
   }
 
 }

@@ -21,30 +21,19 @@ exports.iniciar = function(socket){
         console.log('open');
 
         //pollingEnvio();
-
-        //hex('holacomoestaskev');
-        // var buffer = Buffer.from([0x01, 0x01, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0xFF, 0xFE]);
-        // port.write(buffer,'hex', function(err) {
-        //     if (err) {
-        //         return console.log('Error on write: ', err.message);
-        //     }
-        //     console.log('message written');
-        // });
-
         parser.on('data', function(data) {
-            // console.log(data);
-            controlTrama(data);// checkea si ACK o DATO.
-            // console.log('tamaño del array',data.length)
-            // console.log('traman numero',cuenta)
-            // socket.emit('message', view.toString());
+            if(controlTrama(data)){
+                socket.emit('message', data);
+            }// checkea si ACK o DATO.
         });
     });
-    // socket.on('connection', function(connection) {
-    //     console.log('User Connected');
-    //     connection.on('message', function(msg){
-    //         socket.emit('message', msg);
-    //     });
-    // });
+
+    socket.on('connection', function(connection) {
+        console.log('User Connected');
+        connection.on('message', function(msg){
+            socket.emit('message', msg);
+        });
+    });
 }
 
 function controlTrama(data){
@@ -56,15 +45,18 @@ function controlTrama(data){
         console.log('CRC Correcto, por checkear Num Secuencia');
         if(controlNumSec(data)){
             console.log('Numero de Secuencia Correcto')
+            return true;
         }else{
             console.log('Numero de Secuencia INCORRECTO')
             reintentos++;
             if(reintentos === 3){
                 acoplarNumSec(data);
             }
+            return false;
         }
     }else{
         console.log('CRC incorrecto')
+        return false;
     }
 }
 
@@ -132,16 +124,19 @@ function acoplarNumSec(data){
 }
 
 exports.enviar = function(req, res, next){
+    var nSeq = "0x"+numSecEnvio;
     
-        serialPort.write(req.body.valor,'hex', function(err) {
-            if (err) {
-                return console.log('Error on write: ', err.message);
-            }
-            console.log('message written');
-            res.json('Se escribio correctamente');
-        });
-    
-    }
+    var buffer = Buffer.from([0x01, nSeq, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0xFF, 0xFE]);
+
+    serialPort.write(req.body.valor,'hex', function(err) {
+        if (err) {
+            return console.log('Error on write: ', err.message);
+        }
+        console.log('message written');
+        res.json('Se escribio correctamente');
+    });
+
+}
     
 function pollingEnvio(){
     setTimeout(function(){
