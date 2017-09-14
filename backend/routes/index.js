@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/enviar', serialController.enviar);
-
+router.post('/mesa', serialController.simularMesa);
 
 module.exports = router;
 

@@ -14,9 +14,10 @@ var numSecRecepcion = 0;
 var cuenta = 0;
 var puedoEnviar = 0;
 var reintentos=0;
+var socketGlobal;
 
 exports.iniciar = function(socket){
-
+    socketGlobal = socket;
     port.on("open", function () {
         console.log('open');
 
@@ -146,6 +147,11 @@ exports.enviar = function(req, res, next){
         res.json('Se escribio correctamente');
     });
 
+}
+
+exports.simularMesa = function(req, res, next){
+    socketGlobal.emit('message', req.body.mesa);
+    res.json('Se escribio correctamente');
 }
     
 function pollingEnvio(){
