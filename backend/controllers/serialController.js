@@ -2,8 +2,8 @@ const SerialPort = require('serialport');
 const ByteLength = SerialPort.parsers.ByteLength;
 const Delimiter = SerialPort.parsers.Delimiter;
 const Readline = SerialPort.parsers.Readline;
-const port = new SerialPort('/dev/tty.usbserial',{
-// const port = new SerialPort('COM3',{
+// const port = new SerialPort('/dev/tty.usbserial',{
+const port = new SerialPort('COM3',{
     baudRate: 115200,
 });
 const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xFF,0xFE])}));
@@ -39,7 +39,7 @@ exports.iniciar = function(socket){
 function controlTrama(data){
     var trama   = new Int32Array(data);
     trama = trama.toString();
-    console.log('trama recibida',trama);
+    console.log('trama recibida',data);
 
     if(controlCRC(data)){
         console.log('CRC Correcto, por checkear Num Secuencia');
@@ -49,6 +49,7 @@ function controlTrama(data){
         }else{
             console.log('Numero de Secuencia INCORRECTO')
             reintentos++;
+            console.log('Reintentos: ',reintentos);
             if(reintentos === 3){
                 acoplarNumSec(data);
             }
@@ -89,6 +90,9 @@ function controlNumSec(data){
     if(data.length === 3){ // Pregunto si es un ACK o un dato recibido.
         if(numSecTrama === numSecEnvio){
             numSecEnvio++;
+            if(numSecEnvio > 255){
+                numSecEnvio = 0; // Con esto hago el over flow de 255 a 0
+            }
             puedoEnviar = 1;
             return true;
         }else{
@@ -96,8 +100,11 @@ function controlNumSec(data){
         }
     }else{
         if(numSecTrama === numSecRecepcion){
-            numSecRecepcion++;
             enviarACK();
+            numSecRecepcion++;
+            if(numSecRecepcion > 255){
+                numSecRecepcion = 0; // Con esto hago el over flow de 255 a 0
+            }
             return true;
         }else{
             return false;
@@ -106,7 +113,8 @@ function controlNumSec(data){
 }
 
 function enviarACK(){
-    var nSeq = "0x"+numSecRecepcion;
+    var nSeq = "0x"+numSecRecepcion.toString(16);
+    console.log('numero de secuencia a hex ', nSeq);
     var crc = nSeq; // es igual, es simbolico
     var buffer = Buffer.from([0x00, nSeq, crc,0xFF, 0xFE]);
     // console.log('armando ack: ', buffer);
@@ -119,12 +127,14 @@ function enviarACK(){
 }
 
 function acoplarNumSec(data){
-    numSecRecepcion = data[2];
+    console.log('Numero de Recepcion: ',numSecRecepcion);
+    numSecRecepcion = data[1];
+    console.log('Numero de recepcion actualizado: ',numSecRecepcion);
     reintentos = 0;
 }
 
 exports.enviar = function(req, res, next){
-    var nSeq = "0x"+numSecEnvio;
+    var nSeq = "0x"+numSecEnvio;    
     
     var buffer = Buffer.from([0x01, nSeq, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0xFF, 0xFE]);
 
