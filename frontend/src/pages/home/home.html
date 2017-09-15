@@ -17,7 +17,7 @@
   <ion-list>
     <ion-item *ngFor="let message of chats">{{message}}</ion-item>
   </ion-list>
-
+  
   <div class="table-grid ">
 
     <div class="table-placeholder" style="top: 0em;left: 0em;">
@@ -28,6 +28,8 @@
           </div>
         </div>
       </a>
+      <!-- <ion-badge *ngIf="itemsInCart.length">{{itemsInCart.length}}</ion-badge>  -->
+      <ion-badge *ngIf="mesa1Cuenta" [@addButton]="mesa1Estado" (@addButton.done)="finAnimacion()" style="z-index: 1;position: absolute;right: 0px;font-size: 0.2em;">{{mesa1Cuenta}}</ion-badge> 
     </div>
 
     <div class="table-placeholder" style="top: 0em;left: 1em;">
