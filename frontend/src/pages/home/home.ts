@@ -45,7 +45,7 @@ export class HomePage {
   constructor(public navCtrl: NavController,
               public serialProv:SerialProvider) {
 
-    this.socket = io('http://192.168.1.145:3000');
+    this.socket = io('http://192.168.1.12:3000');
 
     this.socket.on('message', (msg) => {
       let mensaje = msg;

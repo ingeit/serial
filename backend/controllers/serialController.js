@@ -12,16 +12,18 @@ const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xFF,0xFE])}));
 var numSecEnvio = 0;
 var numSecRecepcion = 0;
 var cuenta = 0;
-var puedoEnviar = 0;
+var puedoEnviar = 1;
 var reintentos=0;
 var socketGlobal;
-
+var colaMensajes = [];
 exports.iniciar = function(socket){
     socketGlobal = socket;
+
+    pollingEnvio();
     port.on("open", function () {
         console.log('open');
 
-        //pollingEnvio();
+        
         parser.on('data', function(data) {
             if(controlTrama(data)){
                 socket.emit('message', data);
@@ -134,30 +136,53 @@ function acoplarNumSec(data){
     reintentos = 0;
 }
 
-exports.enviar = function(req, res, next){
-    var nSeq = "0x"+numSecEnvio;    
-    
-    var buffer = Buffer.from([0x01, nSeq, 0x01, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0xFF, 0xFE]);
+exports.encolar = function(req, res, next){
+    var idMesa = req.body.mesa;
+    var nSeq = numSecEnvio;
 
-    serialPort.write(req.body.valor,'hex', function(err) {
-        if (err) {
-            return console.log('Error on write: ', err.message);
-        }
-        console.log('message written');
-        res.json('Se escribio correctamente');
-    });
+    var buffer = Buffer.from([idMesa, nSeq, 0x01, 0x03, 0xFF, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE]);
+    console.log('buffer armado sin CRC',buffer);
+    buffer = armarCRC(buffer);
+    console.log('buffer con CRC',buffer);
+    colaMensajes.push(buffer);
+    res.json('Mensaje Encolado Correctamente');
+}
 
+function armarCRC(buffer){
+    var crcAux = 0;
+    for(var i=0;i<19;i++){
+        crcAux = crcAux + buffer[i];
+    }
+    buffer[19] = crcAux;
+    buffer[20]= Math.floor(crcAux / 256);
+    return buffer;
 }
 
 exports.simularMesa = function(req, res, next){
     socketGlobal.emit('message', req.body.mesa);
     res.json('Se escribio correctamente');
 }
+
+exports.simularAck = function(req, res, next){
+    puedoEnviar = 1;
+    res.json('ACK simulado');
+}
     
 function pollingEnvio(){
+    // console.log('entro a polling')
     setTimeout(function(){
         if(puedoEnviar === 1){
-            console.log('dato enviado');
+            if(colaMensajes.length){
+                var mensaje = colaMensajes.shift();
+                console.log('mensaje enviado ',mensaje);
+                puedoEnviar = 0;
+                // port.write(mensaje,'hex', function(err) {
+                //     if (err) {
+                //         return console.log('Error on write: ', err.message);
+                //     }
+                //     console.log('ack enviado: ', buffer);
+                // });
+            }
         }
         pollingEnvio();
     },20);

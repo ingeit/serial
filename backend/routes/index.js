@@ -9,9 +9,9 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/enviar', serialController.enviar);
+router.post('/enviar', serialController.encolar);
 router.post('/mesa', serialController.simularMesa);
-
+router.post('/ack', serialController.simularAck);
 module.exports = router;
 
 
