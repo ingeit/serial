@@ -6,16 +6,7 @@ import { NavController, NavParams } from 'ionic-angular';
   templateUrl: 'embedded-sortable-component.html',
 })
 export class EmbeddedSortableComponent {
-    dragOperation: boolean = false;
     cuadriculaMesa:any = new Array(10);
-
-    
-    
-    containers: Array<Container> = [
-        new Container(1, 'Container 1', [new Widget('1'), new Widget('2')]),
-        new Container(2, 'Container 2', [new Widget('3'), new Widget('4')]),
-        new Container(3, 'Container 3', [new Widget('5'), new Widget('6')])
-    ];
 
     mesasGeneradas: Array<Mesa> = [
         new Mesa(1,4),
@@ -23,6 +14,7 @@ export class EmbeddedSortableComponent {
         new Mesa(3,4),
         new Mesa(4,4),
     ];
+
     
     constructor(){
         for (var k = 0; k < 10; k++) {
@@ -32,7 +24,8 @@ export class EmbeddedSortableComponent {
         for(let i=0;i<10;i++){
             for(let j=0;j<10;j++){
                 let id = i + "" + j
-                this.cuadriculaMesa[i][j]= new ConteinerMesa(parseInt(id),null);
+                // this.cuadriculaMesa[i][j]= new ConteinerMesa(parseInt(id),null);
+                this.cuadriculaMesa[i][j]= new Mesa(null,null);
             }
         }
 
@@ -40,31 +33,18 @@ export class EmbeddedSortableComponent {
 
     }
     
-mostrar(){
-    console.log('se solto algo')
+mostrar(data,x,y){
+    console.log('se solto algo',data.dragData,x,y)
+    this.cuadriculaMesa[x][y] = data.dragData;
 }
   
-  widgets: Array<Widget> = [];
-  addTo($event: any) {
-      if ($event) {
-          this.widgets.push($event.dragData);
-      }
-  }
-}
-
-class Container {
-constructor(public id: number, public name: string, public widgets: Array<Widget>) {}
-}
-
-class Widget {
-constructor(public name: string) {}
 }
 
 class Mesa {
     constructor(public numero: number, public size: number) {}
 }
 
-class ConteinerMesa {
-    constructor(public id: number, public mesa: Mesa) {}
-}
+// class ConteinerMesa {
+//     constructor(public id: number, public mesa: Mesa) {}
+// }
 
