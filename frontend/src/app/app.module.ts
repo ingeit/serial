@@ -8,22 +8,27 @@ import { HttpModule} from '@angular/http';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { SerialProvider } from '../providers/serial/serial';
+import { EmbeddedSortableComponent } from '../pages/embedded-sortable-component/embedded-sortable-component';
+import {DndModule} from 'ng2-dnd';
 
 @NgModule({
   declarations: [
     MyApp,
-    HomePage
+    HomePage,
+    EmbeddedSortableComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpModule,
+    DndModule.forRoot(),
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    HomePage
+    HomePage,
+    EmbeddedSortableComponent
   ],
   providers: [
     StatusBar,

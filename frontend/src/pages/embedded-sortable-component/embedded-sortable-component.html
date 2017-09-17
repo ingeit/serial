@@ -1,0 +1,54 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>EmbeddedSortableComponent</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <div dnd-sortable-container [sortableData]="mesasGeneradas" [dropZones]="['mesasGeneradas']">
+    <ul>
+        <li *ngFor="let m of mesasGeneradas; let x = index" 
+            dnd-sortable [sortableIndex]="x" [dragEnabled]="true"
+            [dragData]="m">{{m.numero}}</li>
+    </ul>
+  </div>
+
+  <div dnd-sortable-container [sortableData]="cuadriculaMesa" [dragEnabled]="true" [dropZones]="['container-cuadriculaMesa']" >
+    <div class="row" *ngFor="let row of cuadriculaMesa;let y = index ">
+        <div class="col" *ngFor="let col of row; let x = index">
+         <div dnd-sortable [sortableIndex]="y" [sortableIndex]="x" (onDropSuccess)="mostrar()" >{{col.id}}</div>
+        </div>
+    </div>
+  </div>
+
+
+  <!-- <h4>Move items between multi list sortable containers</h4>
+  <div class="row">
+    <div class="col-sm-3">
+        Drag Containers <input type="checkbox" [(ngModel)]="dragOperation"/>
+        <div dnd-sortable-container [sortableData]="containers" [dropZones]="['container-dropZone']">
+            <div class="col-sm3"
+                    *ngFor="let container of containers; let i = index"
+                    dnd-sortable [sortableIndex]="i" [dragEnabled]="dragOperation">
+                <div class="panel panel-warning"
+                    dnd-sortable-container [sortableData]="container.widgets" [dropZones]="['widget-dropZone']">
+                    <div class="panel-heading">
+                        {{container.id}} - {{container.name}}
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            <li *ngFor="let widget of container.widgets; let x = index" class="list-group-item"
+                                dnd-sortable [sortableIndex]="x" [dragEnabled]="!dragOperation"
+                                [dragData]="widget">{{widget.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div> -->
+
+</ion-content>
