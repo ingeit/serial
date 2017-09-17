@@ -3,7 +3,7 @@ const ByteLength = SerialPort.parsers.ByteLength;
 const Delimiter = SerialPort.parsers.Delimiter;
 const Readline = SerialPort.parsers.Readline;
 // const port = new SerialPort('/dev/tty.usbserial',{
-const port = new SerialPort('COM3',{
+const port = new SerialPort('COM4',{
     baudRate: 115200,
 });
 const parser = port.pipe(new Delimiter({ delimiter: new Buffer([0xFF,0xFE])}));
@@ -16,6 +16,9 @@ var puedoEnviar = 1;
 var reintentos=0;
 var socketGlobal;
 var colaMensajes = [];
+var reenviarMensaje = 0;
+var tramaEnviar = [];
+
 exports.iniciar = function(socket){
     socketGlobal = socket;
 
@@ -50,13 +53,20 @@ function controlTrama(data){
             console.log('Numero de Secuencia Correcto')
             return true;
         }else{
-            console.log('Numero de Secuencia INCORRECTO')
-            reintentos++;
-            console.log('Reintentos: ',reintentos);
-            if(reintentos === 3){
-                acoplarNumSec(data);
+            // si el numero de secuencia no coincide, primero veo si yo espero un ack o no para acomplarme o no
+            //si esperamos un ack, no debemos acomplarnos y solamente debemos reenviar el mensaje
+            if(data.length > 3){// esto quiere decir que recibimos un dato
+                console.log('Numero de Secuencia INCORRECTO')
+                reintentos++;
+                console.log('Reintentos: ',reintentos);
+                if(reintentos === 3){
+                    acoplarNumSec(data);
+                }
+                return false;
+            }else{
+                // esto es un ack hacia nosotros, entonces no nos acoplamos, solo esperamos a que ellos se acomplen
+                return false;
             }
-            return false;
         }
     }else{
         console.log('CRC incorrecto')
@@ -91,17 +101,21 @@ function controlCRC(data){
 function controlNumSec(data){
     var numSecTrama = data[1];
     if(data.length === 3){ // Pregunto si es un ACK o un dato recibido.
+        // es un ACK
         if(numSecTrama === numSecEnvio){
             numSecEnvio++;
             if(numSecEnvio > 255){
                 numSecEnvio = 0; // Con esto hago el over flow de 255 a 0
             }
+            reenviarMensaje = 0;
             puedoEnviar = 1;
+            console.log('ACK Correcto')
             return true;
-        }else{
+        }else{// si el num Sec no coincide, debo reenviar el ultimo dato.
+            reenviarMensaje = 1;
             return false;
         }
-    }else{
+    }else{// es una trama
         if(numSecTrama === numSecRecepcion){
             enviarACK();
             numSecRecepcion++;
@@ -140,11 +154,12 @@ exports.encolar = function(req, res, next){
     var idMesa = req.body.mesa;
     var nSeq = numSecEnvio;
 
-    var buffer = Buffer.from([idMesa, nSeq, 0x01, 0x03, 0xFF, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE]);
+    var buffer = Buffer.from([idMesa, nSeq, 0x01, 0x03, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE]);
     console.log('buffer armado sin CRC',buffer);
-    buffer = armarCRC(buffer);
+    buffer = armarCRC(buffer);    
     console.log('buffer con CRC',buffer);
     colaMensajes.push(buffer);
+    reenviarMensaje = 1;
     res.json('Mensaje Encolado Correctamente');
 }
 
@@ -173,19 +188,33 @@ function pollingEnvio(){
     setTimeout(function(){
         if(puedoEnviar === 1){
             if(colaMensajes.length){
-                var mensaje = colaMensajes.shift();
-                console.log('mensaje enviado ',mensaje);
-                puedoEnviar = 0;
-                // port.write(mensaje,'hex', function(err) {
-                //     if (err) {
-                //         return console.log('Error on write: ', err.message);
-                //     }
-                //     console.log('ack enviado: ', buffer);
-                // });
+                tramaEnviar = [];
+                tramaEnviar = colaMensajes.shift();
+                port.write(tramaEnviar,'hex', function(err) {
+                    if (err) {
+                        return console.log('Error on write: ', err.message);
+                    }else{
+                        console.log('mensaje enviado: ',tramaEnviar);
+                        puedoEnviar = 0;
+                    }
+                    
+                });
+            }
+        }else{
+            if(reenviarMensaje === 1){
+                port.write(tramaEnviar,'hex', function(err) {
+                    if (err) {
+                        return console.log('Error on write: ', err.message);
+                    }else{
+                        console.log('mensaje enviado: ',tramaEnviar);
+                        puedoEnviar = 0;
+                    }
+                    
+                });
             }
         }
         pollingEnvio();
-    },20);
+    },50);
 }
     
 function hex(str) {
