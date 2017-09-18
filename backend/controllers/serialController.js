@@ -102,8 +102,10 @@ function controlNumSec(data){
     var numSecTrama = data[1];
     if(data.length === 3){ // Pregunto si es un ACK o un dato recibido.
         // es un ACK
-        if(numSecTrama === numSecEnvio){
-            numSecEnvio++;
+        console.log('longitud cola mensajes ',colaMensajes.length);
+        let numeroSecuenciaAux = numSecEnvio - 1 - colaMensajes.length;
+        console.log("numero de secuencia relacionado con cola: ", numeroSecuenciaAux);
+        if(numSecTrama === numeroSecuenciaAux){
             if(numSecEnvio > 255){
                 numSecEnvio = 0; // Con esto hago el over flow de 255 a 0
             }
@@ -112,7 +114,6 @@ function controlNumSec(data){
             console.log('ACK Correcto')
             return true;
         }else{// si el num Sec no coincide, debo reenviar el ultimo dato.
-            reenviarMensaje = 1;
             return false;
         }
     }else{// es una trama
@@ -153,7 +154,7 @@ function acoplarNumSec(data){
 exports.encolar = function(req, res, next){
     var idMesa = req.body.mesa;
     var nSeq = numSecEnvio;
-
+    numSecEnvio++;
     var buffer = Buffer.from([idMesa, nSeq, 0x01, 0x03, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFE]);
     console.log('buffer armado sin CRC',buffer);
     buffer = armarCRC(buffer);    
@@ -185,36 +186,69 @@ exports.simularAck = function(req, res, next){
     
 function pollingEnvio(){
     // console.log('entro a polling')
-    setTimeout(function(){
-        if(puedoEnviar === 1){
-            if(colaMensajes.length){
-                tramaEnviar = [];
-                tramaEnviar = colaMensajes.shift();
-                port.write(tramaEnviar,'hex', function(err) {
-                    if (err) {
-                        return console.log('Error on write: ', err.message);
-                    }else{
-                        console.log('mensaje enviado: ',tramaEnviar);
-                        puedoEnviar = 0;
-                    }
-                    
-                });
+    if(puedoEnviar === 1){
+        setTimeout(function(){
+            if(puedoEnviar === 1){
+                if(colaMensajes.length){
+                    tramaEnviar = [];
+                    tramaEnviar = colaMensajes.shift();
+                    port.write(tramaEnviar,'hex', function(err) {
+                        if (err) {
+                            return console.log('Error on write: ', err.message);
+                        }else{
+                            console.log('mensaje enviado: ',tramaEnviar);
+                            puedoEnviar = 0;
+                        }
+                        
+                    });
+                }
+            }else{
+                if(reenviarMensaje === 1){
+                    port.write(tramaEnviar,'hex', function(err) {
+                        if (err) {
+                            return console.log('Error on write: ', err.message);
+                        }else{
+                            console.log('mensaje enviado: ',tramaEnviar);
+                            puedoEnviar = 0;
+                        }
+                        
+                    });
+                }
             }
-        }else{
-            if(reenviarMensaje === 1){
-                port.write(tramaEnviar,'hex', function(err) {
-                    if (err) {
-                        return console.log('Error on write: ', err.message);
-                    }else{
-                        console.log('mensaje enviado: ',tramaEnviar);
-                        puedoEnviar = 0;
-                    }
-                    
-                });
+            pollingEnvio();
+        },20);
+    }else{
+        setTimeout(function(){
+            if(puedoEnviar === 1){
+                if(colaMensajes.length){
+                    tramaEnviar = [];
+                    tramaEnviar = colaMensajes.shift();
+                    port.write(tramaEnviar,'hex', function(err) {
+                        if (err) {
+                            return console.log('Error on write: ', err.message);
+                        }else{
+                            console.log('mensaje enviado: ',tramaEnviar);
+                            puedoEnviar = 0;
+                        }
+                        
+                    });
+                }
+            }else{
+                if(reenviarMensaje === 1){
+                    port.write(tramaEnviar,'hex', function(err) {
+                        if (err) {
+                            return console.log('Error on write: ', err.message);
+                        }else{
+                            console.log('mensaje enviado: ',tramaEnviar);
+                            puedoEnviar = 0;
+                        }
+                        
+                    });
+                }
             }
-        }
-        pollingEnvio();
-    },50);
+            pollingEnvio();
+        },1000);
+    }
 }
     
 function hex(str) {
