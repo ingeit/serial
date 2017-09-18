@@ -8,16 +8,16 @@
 
 
 <ion-content padding>
-    <h4>Mesas</h4>
-    <div class="panel panel-default" dnd-draggable [dragEnabled]="true"  *ngFor="let mesa of mesasGeneradas;let x = index" [dragData]="mesa">
-        <div class="panel-body">
-            <div>{{mesa.numero}}</div>
+
+        
+<div clas="row">
+    <div class="col" *ngFor="let row of cuadriculaMesa;let x = index" dnd-sortable-container [sortableData]="row">
+        <div  *ngFor="let col of row;let y = index;let last = last; "  >
+            <span [dragEnabled]="true" [dragData]="col" [sortableIndex]="y" dnd-sortable (onDropSuccess)="mostrar(row,x,y)">{{col.numero}} </span>
         </div>
     </div>
+</div>
     
-    <div class="row" *ngFor="let row of cuadriculaMesa;let x = index" dnd-sortable-container [sortableData]="cuadriculaMesa">
-        <div class="col" *ngFor="let col of row;let y = index " dnd-droppable (onDropSuccess)="mostrar($event,x,y)" >
-          <span dnd-draggable [dragEnabled]="true" [dragData]="col" [sortableIndex]="x" dnd-sortable >{{col.numero}}</span>
-        </div>
-    </div>
+
+    <button ion-button (click)="add()">Agregar Mesa</button>
 </ion-content>
