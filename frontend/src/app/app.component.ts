@@ -10,7 +10,7 @@ import { EmbeddedSortableComponent } from '../pages/embedded-sortable-component/
   templateUrl: 'app.html'
 })
 export class MyApp {
-  rootPage:any = HomePage;
+  rootPage:any = EmbeddedSortableComponent;
 
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {

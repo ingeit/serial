@@ -15,9 +15,9 @@
         </div>
     </div>
     
-    <div class="row" *ngFor="let row of cuadriculaMesa;let x = index" >
-        <div class="col" *ngFor="let col of row;let y = index " dnd-droppable (onDropSuccess)="mostrar($event,x,y)">
-          <span>{{col.numero}}</span>
+    <div class="row" *ngFor="let row of cuadriculaMesa;let x = index" dnd-sortable-container [sortableData]="cuadriculaMesa">
+        <div class="col" *ngFor="let col of row;let y = index " dnd-droppable (onDropSuccess)="mostrar($event,x,y)" >
+          <span dnd-draggable [dragEnabled]="true" [dragData]="col" [sortableIndex]="x" dnd-sortable >{{col.numero}}</span>
         </div>
     </div>
 </ion-content>
