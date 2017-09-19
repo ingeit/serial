@@ -1,14 +1,10 @@
 embedded-sortable {
-    .col{
-        max-width: 10%;
-        float: left;
-        padding: 0;
-    }
-
-    span{
+    .slot {
+        margin-right: 2px;
+        margin-top: 2px;
         width: 100%;
-        display: block;
-        border: 1px solid black !important;
-        min-height: 28px;
+        height: 35px;
+        display: inline-block;
+        border: 1px solid black;
     }
 }

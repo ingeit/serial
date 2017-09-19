@@ -8,16 +8,12 @@
 
 
 <ion-content padding>
-
-        
-<div clas="row">
-    <div class="col" *ngFor="let row of cuadriculaMesa;let x = index" dnd-sortable-container [sortableData]="row">
-        <div  *ngFor="let col of row;let y = index;let last = last; "  >
-            <span [dragEnabled]="true" [dragData]="col" [sortableIndex]="y" dnd-sortable (onDropSuccess)="mostrar(row,x,y)" (onDragStart)="inicio(x,y)" >{{col.numero}} </span>
+    <div class="row" *ngFor="let r of cuadriculaMesa; let x = index">
+        <div class="col" *ngFor="let c of r; let y = index">
+            <span *ngIf="!c.numero" class="slot" dnd-droppable (onDropSuccess)="trasnferData($event,x,y)">
+                    <button (click)="agregarMesa(x,y)">+</button>
+            </span>
+            <span *ngIf="c.numero" class="slot" dnd-draggable (onDragStart)="dragStart(x,y)"[dragEnabled]="true" [dragData]="c">{{c.numero}}</span>
         </div>
-    </div>
-</div>
-    
-
-    <button ion-button (click)="add()">Agregar Mesa</button>
+    </div>    
 </ion-content>
