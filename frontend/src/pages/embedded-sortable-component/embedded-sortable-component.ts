@@ -7,7 +7,7 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class EmbeddedSortableComponent {
     cuadriculaMesa:any = new Array(10);
-    
+    poscionDeIncio:any = [0,0];
     constructor(){
         for (var k = 0; k < 10; k++) {
             this.cuadriculaMesa[k] = new Array(10);
@@ -17,7 +17,7 @@ export class EmbeddedSortableComponent {
             for(let j=0;j<10;j++){
                 let id = i + "" + j
                 // this.cuadriculaMesa[i][j]= new ConteinerMesa(parseInt(id),null);
-                this.cuadriculaMesa[i][j]= new Mesa(null,4,i);
+                this.cuadriculaMesa[i][j]= new Mesa(null,4);
             }
         }
 
@@ -31,8 +31,15 @@ mostrar(data,x,y){
     if(data.length > 10){
         data.splice(index, 1);
     }
-    
+    this.cuadriculaMesa[this.poscionDeIncio[0]][this.poscionDeIncio[1]]= new Mesa(null,4);
     console.log('nuevo array',data)
+
+}
+
+inicio(x,y){
+    console.log('inicio drag',x,y)
+    this.poscionDeIncio[0] = x;
+    this.poscionDeIncio[1] = y;
 }
 
 obtenerIndexEmpty(data){
@@ -45,13 +52,13 @@ obtenerIndexEmpty(data){
     }
 }
 add(){
-    this.cuadriculaMesa[0][0]= new Mesa(1,4,0);
+    this.cuadriculaMesa[0][0]= new Mesa(1,4);
 }
   
 }
 
 class Mesa {
-    constructor(public numero: number, public size: number,public columuna:number) {}
+    constructor(public numero: number, public size: number) {}
 }
 
 // class ConteinerMesa {
