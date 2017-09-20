@@ -7,7 +7,9 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class EmbeddedSortableComponent {
     cuadriculaMesa:any = new Array(10);
-    poscionDeIncio:any = [0,0];
+    numeroMesa:any = 1;
+    posicionDrag:any = [0,0];
+
     constructor(){
         for (var k = 0; k < 10; k++) {
             this.cuadriculaMesa[k] = new Array(10);
@@ -20,17 +22,13 @@ export class EmbeddedSortableComponent {
                 this.cuadriculaMesa[i][j]= new Mesa(parseInt(id),4);
             }
         }
-
-        console.log(this.cuadriculaMesa)
-
     }
     
-mostrar(data,x,y){
-    console.log('se solto algo',data,x,y)
-    let index = this.obtenerIndexEmpty(data);
-    if(data.length > 10){
-        data.splice(index, 1);
+    agregarMesa(x,y){
+        this.cuadriculaMesa[x][y]= new Mesa(this.numeroMesa,4);
+        this.numeroMesa++;
     }
+<<<<<<< HEAD
     this.cuadriculaMesa[this.poscionDeIncio[0]].push(new Mesa(null,4));
     console.log('nuevo array',data)
 
@@ -50,19 +48,23 @@ obtenerIndexEmpty(data){
             index = i;
             return index;
         }
+=======
+
+    dragStart(x,y){
+        console.log('comenzo drag',x,y)
+        this.posicionDrag[0] = x;
+        this.posicionDrag[1] = y;
     }
-}
-add(){
-    this.cuadriculaMesa[0][0]= new Mesa(1,4);
-}
-  
+    trasnferData(data,x,y){
+        console.log('tranferido',data,x,y)
+        this.cuadriculaMesa[x][y] = data.dragData;
+        this.cuadriculaMesa[this.posicionDrag[0]][this.posicionDrag[1]]= new Mesa(null,4);
+>>>>>>> 8cee43715da1fafdec0b193a126e694a97ea5713
+    }
 }
 
 class Mesa {
     constructor(public numero: number, public size: number) {}
 }
 
-// class ConteinerMesa {
-//     constructor(public id: number, public mesa: Mesa) {}
-// }
 
