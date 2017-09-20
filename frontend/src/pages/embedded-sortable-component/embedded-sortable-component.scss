@@ -7,4 +7,31 @@ embedded-sortable {
         display: inline-block;
         border: 1px solid black;
     }
+
+    a{
+        display: block;
+        // visibility: hidden;
+        width: 3.8em;
+        height: 3.8em;
+        color: #666;
+        background: #fcfcfc;
+        border: 1px dashed #ccc;
+        margin: .1em;
+        line-height: .4em;
+        text-align: center;
+        border-radius: 5px;
+        box-sizing: border-box;
+        margin: 6px auto;
+        
+    }
+
+    ion-icon {
+        line-height: 3.1em;
+    }
+
+    .cuadricula{
+        width: 5em;
+        height: 5em;
+        border: 1px solid grey;
+    }
 }
