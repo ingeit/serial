@@ -8,12 +8,14 @@
 
 
 <ion-content padding>
-    <div class="row" *ngFor="let r of cuadriculaMesa; let x = index">
-        <div class="cuadricula" *ngFor="let c of r; let y = index">
-            <span *ngIf="!c.numero"  dnd-droppable (onDropSuccess)="trasnferData($event,x,y)">
-                    <a (click)="agregarMesa(x,y)"><ion-icon name="add"></ion-icon></a>
-            </span>
-            <span *ngIf="c.numero"  dnd-draggable (onDragStart)="dragStart(x,y)"[dragEnabled]="true" [dragData]="c">{{c.numero}}</span>
-        </div>
-    </div>    
+    <div class="contenedorMesa">
+        <div class="row fila" *ngFor="let r of cuadriculaMesa; let x = index">
+            <div class="cuadricula" *ngFor="let c of r; let y = index">
+                <span *ngIf="!c.numero"   dnd-droppable (onDropSuccess)="trasnferData($event,x,y)">
+                        <a (click)="agregarMesa(x,y)" class="plus"><ion-icon name="add"></ion-icon></a>
+                </span>
+                <span *ngIf="c.numero"  dnd-draggable (onDragStart)="dragStart(x,y)"[dragEnabled]="true" [dragData]="c">{{c.numero}}</span>
+            </div>
+        </div>    
+    </div> 
 </ion-content>

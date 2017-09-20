@@ -19,7 +19,7 @@ export class EmbeddedSortableComponent {
             for(let j=0;j<10;j++){
                 let id = i + "" + j
                 // this.cuadriculaMesa[i][j]= new ConteinerMesa(parseInt(id),null);
-                this.cuadriculaMesa[i][j]= new Mesa(parseInt(id),4);
+                this.cuadriculaMesa[i][j]= new Mesa(null,4);
             }
         }
     }
@@ -28,27 +28,6 @@ export class EmbeddedSortableComponent {
         this.cuadriculaMesa[x][y]= new Mesa(this.numeroMesa,4);
         this.numeroMesa++;
     }
-<<<<<<< HEAD
-    this.cuadriculaMesa[this.poscionDeIncio[0]].push(new Mesa(null,4));
-    console.log('nuevo array',data)
-
-}
-
-inicio(x,y){
-    console.log('inicio drag',x,y)
-    this.poscionDeIncio[0] = x;
-    this.poscionDeIncio[1] = y;
-}
-
-obtenerIndexEmpty(data){
-    let index;
-    for(let i=0;i < data.length;i++){
-        if(data[i].numero === null){
-            console.log('espacio vacio')
-            index = i;
-            return index;
-        }
-=======
 
     dragStart(x,y){
         console.log('comenzo drag',x,y)
@@ -59,7 +38,6 @@ obtenerIndexEmpty(data){
         console.log('tranferido',data,x,y)
         this.cuadriculaMesa[x][y] = data.dragData;
         this.cuadriculaMesa[this.posicionDrag[0]][this.posicionDrag[1]]= new Mesa(null,4);
->>>>>>> 8cee43715da1fafdec0b193a126e694a97ea5713
     }
 }
 

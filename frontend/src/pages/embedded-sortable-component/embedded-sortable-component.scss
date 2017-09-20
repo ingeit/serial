@@ -8,30 +8,57 @@ embedded-sortable {
         border: 1px solid black;
     }
 
-    a{
+     span:hover .plus {
         display: block;
-        // visibility: hidden;
-        width: 3.8em;
-        height: 3.8em;
+        width: 100%;
+        height: 100%;
+        visibility: visible;
         color: #666;
         background: #fcfcfc;
         border: 1px dashed #ccc;
-        margin: .1em;
-        line-height: .4em;
         text-align: center;
         border-radius: 5px;
+        -webkit-box-sizing: border-box;
         box-sizing: border-box;
-        margin: 6px auto;
-        
+    }
+
+    .plus {
+        visibility: hidden;
     }
 
     ion-icon {
         line-height: 3.1em;
     }
 
-    .cuadricula{
-        width: 5em;
-        height: 5em;
+    .contenedorMesa{
+        display: block;
+        max-width: 700px;
         border: 1px solid grey;
+    }
+
+    .cuadricula{
+        width: 10%;
+        max-width: 70px;
+        height: 5em;
+        border-right: 1px solid grey;
+    }
+
+    .cuadricula:nth-child(10){
+        border-right: none;
+    }
+
+    .fila{
+        border-bottom: 1px solid grey;
+    }
+
+    .fila:nth-child(10){
+        border-bottom: none;
+    }
+    span{
+        cursor: pointer;
+        padding: 4px;
+        display: block;
+        width: 100%;
+        height: 100%;
     }
 }
